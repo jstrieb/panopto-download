@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+# Created by Jacob Strieb
+# February 2020
 
 import argparse
 import requests
