@@ -70,7 +70,7 @@ def main():
     # Generate output string
     out_string = ""
     for url, title in zip(video_urls, video_titles):
-        out_string += ("-O \"%s.mp4\"\n" % title) if output_xargs else ""
+        out_string += ("\"%s.mp4\"\n" % title) if output_xargs else ""
         out_string += url
         out_string += "\n"
 

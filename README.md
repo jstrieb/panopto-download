@@ -28,17 +28,17 @@ downloading.
     pip3 install -r requirements.txt
     ```
 
-    Depending on the system configuration, `pip3` in the command above may need to
-    instead be replaced with `pip`. Additionally, if on a system with limited
-    permissions, instead run the following command. This only installs the
-    dependencies for the local user, rather than system-wide. In particular, if
-    running the script on the Andrew servers, students can only install locally
-    since their accounts lack `sudo` permissions.
+    Depending on the system configuration, `pip3` in the command above may need
+    to instead be replaced with `pip`. Additionally, if on a system with
+    limited permissions, instead run the following command. This only installs
+    the dependencies for the local user, rather than system-wide. In
+    particular, if running the script on the Andrew servers, students can only
+    install locally since their accounts lack `sudo` permissions.
 
     ```
     pip3 install --user -r requirements.txt
     ```
-    
+
 3. Test that the command works. When run, there should be output like the
    following.
 
@@ -47,7 +47,7 @@ downloading.
     usage: panopto-video-urls.py [-h] [-o OUTPUT_FILE] [-x] podcast_url
     panopto-video-urls.py: error: the following arguments are required: podcast_url
     ```
-    
+
 4. Get a Panopto RSS URL. For more information on how to do this, see the next
    section.
 
@@ -55,9 +55,16 @@ downloading.
    be saved into a file using the `-o` option, or it can be piped directly into
    `xargs` if on a system where it installed. The latter is my preferred option.
    To download all videos from an RSS link, I do the following.
-   
+
     ```
-    python3 panopto-video-urls.py -x "http://<some link>" | xargs --max-lines=2 --max-procs=0 wget
+    python3 panopto-video-urls.py -x "http://<some link>" | xargs --max-lines=2 --max-procs=0 wget -O
+    ```
+
+   On computers that do not have `wget` installed by default (for example those
+   running OS X), instead use the following.
+
+    ```
+    python3 panopto-video-urls.py -x "http://<some link>" | xargs --max-lines=2 --max-procs=0 curl -o
     ```
 
 
