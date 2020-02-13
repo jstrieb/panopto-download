@@ -74,3 +74,23 @@ downloading.
 
 
 # Getting Panopto RSS Feed URLs
+
+Panopto automatically generates RSS feeds for folders of videos. The links to
+these feeds are what is used as input for the script.
+
+1. To get a course or folder's RSS link, first navigate to its folder. One way
+   to do this is by using the "Shared With Me" link on the left side of the
+   page.
+
+   ![Step 1](doc/step-1.png?raw=true "Step 1")
+
+2. When looking at a list of videos, click the name of the folder ("Location")
+   on the right to navigate to that folder.
+
+   ![Step 2](doc/step-2.png?raw=true "Step 2")
+
+3. Finally, in the top-right corner, there is an RSS button. Click that, and
+   right click on "Subscribe to RSS" to copy the RSS link.
+
+   ![Step 3](doc/step-3.png?raw=true "Step 3")
+
