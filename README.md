@@ -57,14 +57,19 @@ downloading.
    To download all videos from an RSS link, I do the following.
 
     ```
-    python3 panopto-video-urls.py -x "http://<some link>" | xargs --max-lines=2 --max-procs=0 wget -O
+    python3 panopto-video-urls.py -x "http://<some link>" | xargs -L 2 -P 0 wget -O
     ```
+
+   The `-L` option to `xargs` specifies that it should read two consecutive
+   lines as arguments to each command that is run, and the `-P` option
+   specifies how many processes to run at once. Using `0` for the number of
+   processes denotes using as many as possible.
 
    On computers that do not have `wget` installed by default (for example those
    running OS X), instead use the following.
 
     ```
-    python3 panopto-video-urls.py -x "http://<some link>" | xargs --max-lines=2 --max-procs=0 curl -o
+    python3 panopto-video-urls.py -x "http://<some link>" | xargs -L 2 -P 0 curl -o
     ```
 
 
