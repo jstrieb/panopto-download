@@ -29,7 +29,7 @@ def parse_args():
 def process_title(title):
     # Turn titles into valid filenames by removing disallowed characters,
     # replacing spaces with understcores, and replacing periods with dashes
-    disallowed_chars = "/\\?%*:|\"><,'()+"
+    disallowed_chars = "/\\?%*:|\"><,'()+#"
     trans = str.maketrans("", "", disallowed_chars)
     return title.translate(trans).replace(" ", "_").replace(".", "-")
 
