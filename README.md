@@ -25,7 +25,7 @@ downloading.
    (particularly if seeing a `ModuleNotFoundError`), run the following.
 
     ```
-    pip3 install -r requirements.txt
+    python3 -m pip install -r requirements.txt
     ```
 
     Depending on the system configuration, `pip3` in the command above may need
@@ -36,7 +36,7 @@ downloading.
     install locally since their accounts lack `sudo` permissions.
 
     ```
-    pip3 install --user -r requirements.txt
+    python3 -m pip install --user -r requirements.txt
     ```
 
 3. Test that the command works. When run, there should be output like the
