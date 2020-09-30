@@ -7,7 +7,8 @@ download course videos, but there is a feature where folders of recorded videos
 generate RSS feeds.
 
 This script parses Panopto RSS feeds and extracts video URLs for batch
-downloading.
+downloading. In general, this project is designed to make it as easy as possible
+to download Panopto videos and lectures.
 
 
 # Quick Start
