@@ -5,7 +5,11 @@
 import argparse
 import requests
 
+from urllib.parse import urlparse
+
 import xml.etree.ElementTree as ET
+
+from lxml import html
 
 
 ###############################################################################
@@ -50,6 +54,17 @@ def parse_xml(url, parse_filenames=False):
     # NOTE: We assume order is preserved so that titles and URLs correspond
     return urls, titles
 
+def parse_html(url, parse_filenames=False):
+    # Download and parse the HTML from the URL
+    r = requests.get(url)
+    tree = html.fromstring(r.content)
+
+    # NOTE: there is probably only one of each of these
+    urls = list(tree.xpath("//meta[@property='og:video']/@content"))
+    titles = list(tree.xpath("//meta[@property='og:title']/@content"))
+
+    return urls, titles
+
 
 
 ###############################################################################
@@ -63,8 +78,22 @@ def main():
     output_file = args.output_file
     output_xargs = args.output_xargs
 
+    # Parse the input URL to decide how to proceed
+    url_path = urlparse(podcast_url).path
+
+    # Pick a function for getting video URLs depending on main URL path
+    get_url_functions = {
+        "/Panopto/Podcast/Podcast.ashx": parse_xml,
+        "/Panopto/Pages/Viewer.aspx": parse_html,
+    }
+    try:
+        parse = get_url_functions[url_path]
+    except KeyError:
+        print("Invalid input URL")
+        return
+
     # Get video URLs from parsed XML link
-    video_urls, video_titles = parse_xml(podcast_url)
+    video_urls, video_titles = parse(podcast_url)
     assert(len(video_urls) == len(video_titles))
 
     # Generate output string
