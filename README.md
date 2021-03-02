@@ -58,19 +58,22 @@ to download Panopto videos and lectures.
    To download all videos from an RSS link, I do the following.
 
     ```
-    python3 panopto-video-urls.py -x "http://<some link>" | xargs -L 2 -P 0 wget -O
+    python3 panopto-video-urls.py -x "http://<some link>" | xargs -L 2 -P 8 wget -O
     ```
 
    The `-L` option to `xargs` specifies that it should read two consecutive
    lines as arguments to each command that is run, and the `-P` option
    specifies how many processes to run at once. Using `0` for the number of
-   processes denotes using as many as possible.
+   processes denotes using as many as possible, but `8` has greater
+   cross-platform compatability, and is thus used instead.
 
    On computers that do not have `wget` installed by default (for example those
-   running OS X), instead use the following.
+   running OS X), instead use the following. The `-L` option to `curl`
+   specifies that `curl` should follow redirects until it gets to the video,
+   and is different from the `-L` option passed to `xargs`.
 
     ```
-    python3 panopto-video-urls.py -x "http://<some link>" | xargs -L 2 -P 0 curl -o
+    python3 panopto-video-urls.py -x "http://<some link>" | xargs -L 2 -P 8 curl -L -o
     ```
 
 
