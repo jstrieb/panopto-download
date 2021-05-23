@@ -7,7 +7,7 @@ import requests
 
 from urllib.parse import urlparse
 
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ElementTree
 
 from lxml import html
 
@@ -19,23 +19,26 @@ from lxml import html
 def parse_args():
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Extract video URLs from RSS "
-        "podcast link")
+                                                 "podcast link")
     parser.add_argument("podcast_url", help="Link to the RSS feed containing "
-        "video URLs")
-    parser.add_argument("-o", "--output_file", required=False, help="Path for "
-        "a file to output the list of links to. If not specified, print to "
-        "standard output")
+                                            "video URLs")
+    parser.add_argument("-o", "--output_file", required=False,
+                        help="Path for a file to output the list of links to. "
+                             "If not specified, print to standard output")
     parser.add_argument("-x", "--output_xargs", required=False,
-        action="store_true", help="Use to output file names in addition to "
-        "file URLs. Output will be in xargs format")
+                        action="store_true",
+                        help="Use to output file names in addition to " 
+                             "file URLs. Output will be in xargs format")
     return parser.parse_args()
+
 
 def process_title(title):
     # Turn titles into valid filenames by removing disallowed characters,
-    # replacing spaces with understcores, and replacing periods with dashes
+    # replacing spaces with underscores, and replacing periods with dashes
     disallowed_chars = "/\\?%*:|\"><,'()+#"
     trans = str.maketrans("", "", disallowed_chars)
     return title.translate(trans).replace(" ", "_").replace(".", "-")
+
 
 def parse_xml(url, parse_filenames=False):
     # Download the XML from the URL
@@ -43,7 +46,7 @@ def parse_xml(url, parse_filenames=False):
     data = r.content.decode(r.encoding if r.encoding else r.apparent_encoding)
 
     # Parse the retrieved XML file
-    root = ET.fromstring(data)
+    root = ElementTree.fromstring(data)
 
     # Return the URLs from enclosure tags inside items. For reference, see:
     # https://docs.python.org/3.8/library/xml.etree.elementtree.html
@@ -53,6 +56,7 @@ def parse_xml(url, parse_filenames=False):
 
     # NOTE: We assume order is preserved so that titles and URLs correspond
     return urls, titles
+
 
 def parse_html(url, parse_filenames=False):
     # Download and parse the HTML from the URL
@@ -64,7 +68,6 @@ def parse_html(url, parse_filenames=False):
     titles = list(tree.xpath("//meta[@property='og:title']/@content"))
 
     return urls, titles
-
 
 
 ###############################################################################
@@ -109,7 +112,6 @@ def main():
             f.write(out_string)
     else:
         print(out_string)
-
 
 
 if __name__ == "__main__":
