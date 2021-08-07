@@ -29,19 +29,18 @@ to download Panopto videos and lectures.
     python3 -m pip install -r requirements.txt
     ```
 
-    Depending on the system configuration, `pip3` in the command above may need
-    to instead be replaced with `pip`. Additionally, if on a system with
-    limited permissions, instead run the following command. This only installs
-    the dependencies for the local user, rather than system-wide. In
-    particular, if running the script on the Andrew servers, students can only
-    install locally since their accounts lack `sudo` permissions.
+    Additionally, if on a system with limited permissions, instead run the
+    following command. This only installs the dependencies for the local user,
+    rather than system-wide. In particular, if running the script on the Andrew
+    servers, students can only install locally since their accounts lack `sudo`
+    permissions.
 
     ```
     python3 -m pip install --user -r requirements.txt
     ```
 
-3. Test that the command works. When run, there should be output like the
-   following.
+3. Test that the command works. When run, there should be output (somewhat)
+   like the following.
 
     ```
     $ python3 panopto-video-urls.py
@@ -54,27 +53,23 @@ to download Panopto videos and lectures.
 
 5. Now, use the script to generate a list of video URLs to download. This can
    be saved into a file using the `-o` option, or it can be piped directly into
-   `xargs` if on a system where it installed. The latter is my preferred option.
-   To download all videos from an RSS link, I do the following.
+   `xargs` if on a system where it is installed. The latter is my preferred
+   option. To download all videos from an RSS link, I do the following.
 
     ```
-    python3 panopto-video-urls.py -x "http://<some link>" | xargs -L 2 -P 8 wget -O
+    python3 panopto-video-urls.py -x "http://<some link>" | xargs -L 2 -P 8 curl -q -L
     ```
 
-   The `-L` option to `xargs` specifies that it should read two consecutive
-   lines as arguments to each command that is run, and the `-P` option
-   specifies how many processes to run at once. Using `0` for the number of
-   processes denotes using as many as possible, but `8` has greater
-   cross-platform compatability, and is thus used instead.
+   The `-L 2` option to `xargs` specifies that it should read two consecutive
+   lines as arguments to each command that is run (run with `-L 3` if using
+   cookies), and the `-P 8` option specifies how many processes to run at once.
+   Using `0` for the number of processes denotes using as many as possible, but
+   `8` has greater cross-platform compatibility, and is thus used instead.
 
-   On computers that do not have `wget` installed by default (for example those
-   running OS X), instead use the following. The `-L` option to `curl`
-   specifies that `curl` should follow redirects until it gets to the video,
-   and is different from the `-L` option passed to `xargs`.
-
-    ```
-    python3 panopto-video-urls.py -x "http://<some link>" | xargs -L 2 -P 8 curl -L -o
-    ```
+   The `-L` option to `curl` specifies that `curl` should follow redirects until
+   it gets to the video, and is different from the `-L` option passed to 
+   `xargs`. The `-q` option tells `curl` not to print a progress bar for each
+   process.
 
 
 # Getting Panopto RSS Feed URLs

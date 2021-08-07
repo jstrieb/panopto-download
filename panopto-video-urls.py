@@ -29,6 +29,8 @@ def parse_args():
                         action="store_true",
                         help="Use to output file names in addition to " 
                              "file URLs. Output will be in xargs format")
+    parser.add_argument("-c", "--cookie", required=False,
+                        help=".ASPXAUTH Cookie for Panopto")
     return parser.parse_args()
 
 
@@ -40,7 +42,7 @@ def process_title(title):
     return title.translate(trans).replace(" ", "_").replace(".", "-")
 
 
-def parse_xml(url, parse_filenames=False):
+def parse_xml(url, parse_filenames=False, cookie=None):
     # Download the XML from the URL
     r = requests.get(url)
     data = r.content.decode(r.encoding if r.encoding else r.apparent_encoding)
@@ -58,9 +60,23 @@ def parse_xml(url, parse_filenames=False):
     return urls, titles
 
 
-def parse_html(url, parse_filenames=False):
+def parse_html(url, parse_filenames=False, cookie=None):
+    cookies = dict()
+    if cookie is not None:
+        cookies[".ASPXAUTH"] = cookie
+
     # Download and parse the HTML from the URL
-    r = requests.get(url)
+    r = requests.get(url, allow_redirects=True, cookies=cookies)
+
+    # Notify the user if they must log in
+    if (len(r.history) > 0 and r.history[0].status_code == 302
+            and "location" in r.history[0].headers):
+        path = urlparse(r.history[0].headers["location"]).path
+        if path == "/Panopto/Pages/Auth/Login.aspx":
+            print("Login required to access this page. Log in from the browser "
+                  "and pass the .ASPXAUTH cookie as the --cookie argument.")
+            return [], []
+
     tree = html.fromstring(r.content)
 
     # NOTE: there is probably only one of each of these
@@ -80,6 +96,7 @@ def main():
     podcast_url = args.podcast_url
     output_file = args.output_file
     output_xargs = args.output_xargs
+    auth_cookie = args.cookie
 
     # Parse the input URL to decide how to proceed
     url_path = urlparse(podcast_url).path
@@ -96,13 +113,23 @@ def main():
         return
 
     # Get video URLs from parsed XML link
-    video_urls, video_titles = parse(podcast_url)
-    assert(len(video_urls) == len(video_titles))
+    video_urls, video_titles = parse(podcast_url, cookie=auth_cookie)
+    try:
+        assert(len(video_urls) == len(video_titles))
+    except AssertionError:
+        print("Error: Expected equal number of video URLs and titles. Got:"
+              + "\nURLs: %s" % video_urls
+              + "\nTitles: %s" % video_titles)
+        return
 
     # Generate output string
     out_string = ""
     for url, title in zip(video_urls, video_titles):
-        out_string += ("\"%s.mp4\"\n" % title) if output_xargs else ""
+        if output_xargs:
+            # Assume xargs calls curl
+            out_string += "-o \"%s.mp4\"\n" % title.replace("/", "_")
+            if auth_cookie is not None:
+                out_string += "-H 'Cookie: .ASPXAUTH=%s'\n" % auth_cookie
         out_string += url
         out_string += "\n"
 
